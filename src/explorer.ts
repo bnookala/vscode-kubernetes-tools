@@ -6,6 +6,7 @@ import { Kubectl } from './kubectl';
 import * as kubectlUtils from './kubectlUtils';
 import { Host } from './host';
 import * as kuberesources from './kuberesources';
+import * as svcat from './components/services/binding';
 
 export function create(kubectl: Kubectl, host: Host): KubernetesExplorer {
     return new KubernetesExplorer(kubectl, host);
@@ -92,7 +93,8 @@ class KubernetesCluster implements KubernetesObject {
             new KubernetesWorkloadFolder(),
             new KubernetesServiceFolder(),
             new KubernetesResourceFolder(kuberesources.allKinds.ingress),
-            new KubernetesConfigFolder()
+            new KubernetesConfigFolder(),
+            new KubernetesExternalServiceFolder()
         ];
     }
 
@@ -190,6 +192,39 @@ class KubernetesResource implements KubernetesObject, ResourceNode {
             this.kind == kuberesources.allKinds.configMap) {
             treeItem.contextValue = `vsKubernetes.resource.${this.kind.abbreviation}`;
         }
+        return treeItem;
+    }
+}
+
+/**
+ * Represents a collection of 'External Services', ie a number of managed services on a cloud provider of your choice ie Azure.
+ */
+class KubernetesExternalServiceFolder extends KubernetesResourceFolder {
+    constructor () {
+        super(kuberesources.allKinds.externalService);
+    }
+
+    async getChildren(kubectl: Kubectl, host: Host): Promise<KubernetesObject[]> {
+        const services = await svcat.getServiceInstances();
+        return services.map((service) => new KubernetesExternalServiceResource(this.kind, service.name, service));
+    }
+}
+
+/**
+ * Represents an individual 'External Service', ie a single instance of an external service on the cloud provider of your choice.
+ */
+class KubernetesExternalServiceResource extends KubernetesResource {
+    constructor(readonly kind: kuberesources.ResourceKind, readonly id: string, readonly metadata?: any) {
+        super(kind, id, metadata);
+    }
+
+    async getTreeItem(): Promise<vscode.TreeItem> {
+        const treeItem = await super.getTreeItem();
+        treeItem.contextValue = `vsKubernetes.resource.${this.kind.abbreviation}`;
+
+        // external services don't need commands.
+        treeItem.command = undefined;
+
         return treeItem;
     }
 }

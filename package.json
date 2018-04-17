@@ -44,6 +44,10 @@
         "onCommand:extension.vsKubernetesCreateCluster",
         "onCommand:extension.vsKubernetesDashboard",
         "onCommand:extension.vsKubernetesPortForward",
+        "onCommand:extension.vsKubernetesAddService",
+        "onCommand:extension.vsKubernetesRemoveService",
+        "onCommand:extension.vsKubernetesAddExternalService",
+        "onCommand:extension.vsKubernetesRemoveExternalService",
         "onCommand:extension.vsKubernetesDeleteFile",
         "onCommand:extension.vsKubernetesAddFile",
         "onCommand:extension.helmTemplate",
@@ -137,12 +141,36 @@
                     "title": "Update Dependencies",
                     "when": "resourceFilename == requirements.yaml",
                     "command": "extension.helmDepUp",
-                    "group": "2_helm@99"
+                    "group": "2_helm@95"
                 },
                 {
                     "when": "",
                     "command": "extension.helmInspectValues",
-                    "group": "2_helm@98"
+                    "group": "2_helm@96"
+                },
+                {
+                    "title": "Add Service",
+                    "when": "explorerResourceIsFolder == true && resourceFilename == charts",
+                    "command": "extension.vsKubernetesAddService",
+                    "group": "2_svcat@97"
+                },
+                {
+                    "title": "Remove Service",
+                    "when": "explorerResourceIsFolder == true && resourceFilename == charts",
+                    "command": "extension.vsKubernetesRemoveService",
+                    "group": "2_svcat@98"
+                },
+                {
+                    "title": "Add External Service",
+                    "when": "explorerResourceIsFolder == true && resourceFilename == charts",
+                    "command": "extension.vsKubernetesAddExternalService",
+                    "group": "2_svcat@99"
+                },
+                {
+                    "title": "Remove External Service",
+                    "when": "explorerResourceIsFolder == true && resourceFilename == charts",
+                    "command": "extension.vsKubernetesRemoveExternalService",
+                    "group": "2_svcat@100"
                 }
             ],
             "view/title": [
@@ -515,6 +543,26 @@
                 "category": "Kubernetes"
             },
             {
+                "command": "extension.vsKubernetesAddService",
+                "title": "Add Service",
+                "category": "Services (Kubernetes)"
+            },
+            {
+                "command": "extension.vsKubernetesRemoveService",
+                "title": "Remove Service",
+                "category": "Services (Kubernetes)"
+            },
+            {
+                "command": "extension.vsKubernetesAddExternalService",
+                "title": "Add External Service",
+                "category": "Services (Service Catalog)"
+            },
+            {
+                "command": "extension.vsKubernetesRemoveExternalService",
+                "title": "Remove External Service",
+                "category": "Services (Service Catalog)"
+            },
+            {
                 "command": "extension.vsKubernetesCopy",
                 "title": "Copy Name",
                 "category": "Kubernetes"
@@ -754,6 +802,7 @@
         "redhat.vscode-yaml"
     ],
     "dependencies": {
+        "@types/clipboardy": "^1.1.0",
         "@types/restify": "^5.0.7",
         "@types/shelljs": "^0.7.8",
         "await-notify": "^1.0.1",

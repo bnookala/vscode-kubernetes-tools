@@ -42,8 +42,9 @@ import { HelmTemplateCompletionProvider } from './helm.completionProvider';
 import { Reporter } from './telemetry';
 import * as telemetry from './telemetry-helper';
 import * as extensionapi from './extension.api';
-import {dashboardKubernetes} from './components/kubectl/dashboard';
-import {portForwardKubernetes} from './components/kubectl/port-forward';
+import { dashboardKubernetes } from './components/kubectl/dashboard';
+import { portForwardKubernetes } from './components/kubectl/port-forward';
+import { addService, removeService, addExternalService, removeExternalService } from './components/services/binding';
 import { Errorable, failed } from './wizard';
 import { Git } from './components/git/git';
 import { DebugSession } from './debug/debugSession';
@@ -147,6 +148,10 @@ export async function activate(context): Promise<extensionapi.ExtensionAPI> {
         registerCommand('extension.vsKubernetesDashboard', dashboardKubernetes),
         registerCommand('extension.vsKubernetesCopy', copyKubernetes),
         registerCommand('extension.vsKubernetesPortForward', portForwardKubernetes),
+        registerCommand('extension.vsKubernetesAddService', addService),
+        registerCommand('extension.vsKubernetesRemoveService', removeService),
+        registerCommand('extension.vsKubernetesAddExternalService', addExternalService),
+        registerCommand('extension.vsKubernetesRemoveExternalService', removeExternalService),
         registerCommand('extension.vsKubernetesLoadConfigMapData', configmaps.loadConfigMapData),
         registerCommand('extension.vsKubernetesDeleteFile', (obj) => { deleteKubernetesConfigFile(kubectl, obj, treeProvider); }),
         registerCommand('extension.vsKubernetesAddFile', (obj) => { addKubernetesConfigFile(kubectl, obj, treeProvider); }),
